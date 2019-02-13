@@ -1,0 +1,61 @@
+/*
+ Socket program for single client and single server 
+ */
+package socketdemo;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
+
+/**
+ *
+ * @author mca240
+ */
+public class SocketDemo {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        // TODO code application logic here
+        try {
+            
+            // creating a server
+        ServerSocket s1 = new ServerSocket(5555);
+        
+            // connection with the single client
+        Socket incoming = s1.accept();
+        
+            // reading and sending messages to the client
+         InputStream is = incoming.getInputStream();
+         OutputStream os = incoming.getOutputStream();
+         
+            // reading data from the client
+         Scanner sc = new Scanner(is, "UTF-8");
+         
+            // writing the data from the client
+         PrintWriter out = new PrintWriter(new OutputStreamWriter(os,"UTF-8"),true /*autoflush*/);
+         out.println("Enter BYE to exit..............");
+         
+         while(sc.hasNextLine()) {
+             String line = sc.nextLine();
+             // for string equality use equals() and for char use "=="
+             if(line.equals("BYE")) 
+             {
+                 out.println("BYEEEEEEEE! Connection is closed Ghare jaine sui ja..");
+                 incoming.close(); // it close the client connection
+                 break;
+             }
+             System.out.println("Server Responce :" +line);
+         }
+         
+        } catch(Exception e) {
+            System.out.println("Exception :" +e.getMessage());
+        }
+    }
+ }
+
