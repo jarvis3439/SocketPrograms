@@ -1,0 +1,75 @@
+/*
+ *This Program is about handling multiple client on single server using Thread
+ */
+package multipleclientsingleserversocket;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.util.Scanner;
+
+/**
+ *
+ * @author mca240
+ *
+ */
+class ThreadServer implements Runnable {
+
+    Socket s;
+    public ThreadServer(Socket s) {
+        this.s = s;
+    }
+    @Override
+    public void run() {
+        try {
+            InputStream is = s.getInputStream();
+            OutputStream os = s.getOutputStream();
+            
+            Scanner scan = new Scanner(is,"UTF-8");
+            
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(os),true);
+            
+         pw.println("Type bye for exit.......");
+         
+         while(scan.hasNextLine()) {
+             String line = scan.nextLine();
+             pw.println("Server Responce :" +line);
+             
+             if(line.equals("Bye")) {
+                 s.close();
+                 System.out.println("Thread :"+Thread.getAllStackTraces());
+                 break;
+                
+             }
+         }
+        } catch (Exception e) {
+            System.out.println("Exception :" +e.getMessage());
+        }
+    }
+
+
+}
+public class MultipleClientSingleServerSocket {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) throws IOException {
+        // TODO code application logic here
+        ServerSocket ss = new ServerSocket(5555);
+
+        int count = 1;
+        while(true) {
+            Socket sock = ss.accept();
+            System.out.println("Thread " +count+ " Created :)");
+            Thread t = new Thread(new ThreadServer(sock));
+            t.start();
+            count++;
+        }
+    }
+    
+}
